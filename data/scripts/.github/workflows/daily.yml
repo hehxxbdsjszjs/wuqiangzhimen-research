@@ -1,0 +1,21 @@
+name: Daily intelligence update
+on:
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - run: node scripts/collect.mjs
+      - run: |
+          git config user.name "Wuqiangzhimen Research Bot"
+          git config user.email "actions@github.com"
+          git add data/daily.json
+          git diff --cached --quiet || git commit -m "Daily intelligence update"
+          git push
